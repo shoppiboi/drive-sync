@@ -1,0 +1,17 @@
+{
+  "driveApiKey": {
+    "name": "Drive API Key",
+    "description": "API key to access the Drive API",
+    "placeholder": "YOUR_API_KEY",
+    "value": "hello"
+  },
+  "driveApiSecret": {
+    "name": "Drive API Secret",
+    "description": "API Secret to access the Drive API",
+    "placeholder": "YOUR_API_SECRET",
+    "value": "12312312312"
+  },
+  "mySetting": "hello",
+  "apiKey": "YOUR API KEY",
+  "apiSecret": "YOUR API SECRET"
+}
