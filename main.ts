@@ -2,16 +2,35 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
-	mySetting: string;
+interface SettingConfig {
+	name: string;
+	description: string;
+	placeholder: string;
+	value: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+interface PluginSettings {
+	driveApiKey: SettingConfig;
+	driveApiSecret: SettingConfig;
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+const DEFAULT_SETTINGS: PluginSettings = {
+	driveApiKey: {
+		name: 'Drive API Key',
+		description: 'API key to access the Drive API',
+		placeholder: 'YOUR_API_KEY',
+		value: ''
+	},
+	driveApiSecret: {
+		name: 'Drive API Secret',
+		description: 'API Secret to access the Drive API',
+		placeholder: 'YOUR_API_SECRET',
+		value: ''
+	},
+}
+
+export default class GoogleDriveSync extends Plugin {
+	settings: PluginSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -19,7 +38,7 @@ export default class MyPlugin extends Plugin {
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+			new Notice("It's ya booooooiiiiiii!");
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -66,7 +85,7 @@ export default class MyPlugin extends Plugin {
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new SettingsTab(this.app, this));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -107,10 +126,10 @@ class SampleModal extends Modal {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class SettingsTab extends PluginSettingTab {
+	plugin: GoogleDriveSync;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: GoogleDriveSync) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -120,14 +139,27 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
+		let driveApiKeyConfig: SettingConfig = this.plugin.settings.driveApiKey
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName(driveApiKeyConfig.name)
+			.setDesc(driveApiKeyConfig.description)
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+				.setPlaceholder(driveApiKeyConfig.placeholder)
+				.setValue(driveApiKeyConfig.value)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					driveApiKeyConfig.value = value;
+					await this.plugin.saveSettings();
+				}));
+	
+		let driveApiSecretConfig: SettingConfig = this.plugin.settings.driveApiSecret
+		new Setting(containerEl)
+			.setName(driveApiSecretConfig.name)
+			.setDesc(driveApiSecretConfig.description)
+			.addText(text => text
+				.setPlaceholder(driveApiSecretConfig.placeholder)
+				.setValue(driveApiSecretConfig.value)
+				.onChange(async (value) => {
+					driveApiSecretConfig.value = value;
 					await this.plugin.saveSettings();
 				}));
 	}
